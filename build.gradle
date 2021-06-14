@@ -15,6 +15,8 @@ repositories {
 }
 
 micronaut {
+    //subir um servico http tambem, ja que acessamos um cliente externo
+    runtime "netty"
     testRuntime("junit5")
     processing {
         incremental(true)
@@ -31,8 +33,18 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("io.micronaut:micronaut-validation")
-
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    //JPA
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    runtime("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.sql:micronaut-hibernate-jpa")
+
+    //BD - Postgres
+    runtimeOnly("org.postgresql:postgresql")
+
+    //Cliente HTTP para acessar servico externo
+    implementation("io.micronaut:micronaut-http-client")
 
     testImplementation("io.micronaut:micronaut-http-client")
 
