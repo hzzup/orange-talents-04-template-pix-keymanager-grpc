@@ -31,14 +31,14 @@ dependencies {
     implementation("javax.annotation:javax.annotation-api")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
-    runtimeOnly("ch.qos.logback:logback-classic")
     implementation("io.micronaut:micronaut-validation")
+    runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //JPA
     implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
-    runtime("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.sql:micronaut-hibernate-jpa")
+    runtime("io.micronaut.sql:micronaut-jdbc-hikari")
 
     //BD - Postgres
     runtimeOnly("org.postgresql:postgresql")
@@ -46,6 +46,8 @@ dependencies {
     //Cliente HTTP para acessar servico externo
     implementation("io.micronaut:micronaut-http-client")
 
+    //DB para testes + cliente http
+    testImplementation("com.h2database:h2")
     testImplementation("io.micronaut:micronaut-http-client")
 
 }

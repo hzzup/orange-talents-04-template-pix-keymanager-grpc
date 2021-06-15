@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull
 
 @Entity
 data class Pix(
+    @field:NotBlank @Column(nullable=false) val agencia : String,
+    @field:NotBlank @Column(nullable=false) val numero: String,
     @field:NotBlank @Column(nullable=false) val idCliente : String,
     @field:NotBlank @Column(nullable=false) val nome: String,
     @field:NotBlank @Column(nullable=false) val cpf: String,
@@ -25,7 +27,7 @@ data class Pix(
 }
 
 enum class Conta{
-    POUPANCA, CORRENTE
+    CONTA_CORRENTE, CONTA_POUPANCA
 }
 
 enum class TipoPix {
@@ -34,9 +36,9 @@ enum class TipoPix {
 
 
 fun contaGrpcParaModelo(tipoConta: TipoConta?): Conta {
-    var conta: Conta = Conta.CORRENTE
+    var conta: Conta = Conta.CONTA_CORRENTE
     when(tipoConta) {
-        POUPANCA -> {conta = Conta.POUPANCA}
+        POUPANCA -> {conta = Conta.CONTA_POUPANCA}
     }
     return conta;
 }

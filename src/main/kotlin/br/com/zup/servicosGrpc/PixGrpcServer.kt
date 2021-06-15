@@ -26,7 +26,9 @@ class PixGrpcServer(@Inject val erpClient : ErpClient, @Inject val pixRep : PixR
 
         //validacao para caso cliente nao exista no erp itau
         //retorno true significa que o cliente nao existe no erp
-        val cliente = erpClient.consultaClienteId(pixRequest?.idCliente)
+        //val cliente = erpClient.consultaClienteId(pixRequest?.idCliente) validacao errada
+        val tipoDaConta = contaGrpcParaModelo(pixRequest?.tipoConta)
+        val cliente = erpClient.consultaClienteConta(pixRequest?.idCliente,tipoDaConta)
         if(VerificaClienteErpItau(cliente.status)){
             return retornoComErro(Status.NOT_FOUND, "Cliente não encontrado!",responseObserver)
         }
@@ -57,11 +59,13 @@ class PixGrpcServer(@Inject val erpClient : ErpClient, @Inject val pixRep : PixR
         //criando minha chave para salvar no banco
         val clienteSemHttp = cliente.body()
         val novoPix = Pix(idCliente = pixRequest!!.idCliente,
-                            nome= clienteSemHttp.nome,
-                            cpf= clienteSemHttp.cpf,
+                            agencia = clienteSemHttp.agencia,
+                            numero = clienteSemHttp.numero,
+                            nome= clienteSemHttp.titular.nome,
+                            cpf= clienteSemHttp.titular.cpf,
                             instituicao= clienteSemHttp.instituicao.nome,
                             ispb = clienteSemHttp.instituicao.ispb,
-                            conta= contaGrpcParaModelo(pixRequest?.tipoConta),
+                            conta= tipoDaConta,
                             tipoPix= chavePixGrpcParaModelo(pixRequest?.tipoChave),
                             valorChave = valorFinalChave!!
         )
