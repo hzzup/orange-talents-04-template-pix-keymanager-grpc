@@ -5,6 +5,13 @@ plugins {
     id("io.micronaut.application") version "1.5.0"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.4.32"
     id("com.google.protobuf") version "0.8.15"
+    //added no args manually
+    id "org.jetbrains.kotlin.plugin.noarg" version "1.5.10"
+}
+
+noArg {
+    //embeddable wasnt with no args constructor
+    annotation("javax.persistence.Embeddable")
 }
 
 version = "0.1"
@@ -39,6 +46,10 @@ dependencies {
     implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
     implementation("io.micronaut.sql:micronaut-hibernate-jpa")
     runtime("io.micronaut.sql:micronaut-jdbc-hikari")
+
+    //bean validation
+    implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
+    implementation("org.hibernate:hibernate-validator:6.1.6.Final")
 
     //BD - Postgres
     runtimeOnly("org.postgresql:postgresql")
