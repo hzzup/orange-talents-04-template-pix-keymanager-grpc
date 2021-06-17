@@ -1,6 +1,6 @@
 package br.com.zup.pix.registra
 
-import br.com.zup.KeymanagerRegistraGrpcServiceGrpc
+import br.com.zup.KeyManagerRegistraGrpcServiceGrpc
 import br.com.zup.RegistraChavePixRequest
 import br.com.zup.RegistraChavePixResponse
 import br.com.zup.advice.ErrorHandler
@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @Singleton
 //injetamos nosso service, para realizar as validacoes da bean validation e salvar nossa chave
 class RegistraChaveEndpoint(@Inject private val service: NovaChavePixService)
-    : KeymanagerRegistraGrpcServiceGrpc.KeymanagerRegistraGrpcServiceImplBase() {
+    : KeyManagerRegistraGrpcServiceGrpc.KeyManagerRegistraGrpcServiceImplBase() {
 
 
     override fun registra(

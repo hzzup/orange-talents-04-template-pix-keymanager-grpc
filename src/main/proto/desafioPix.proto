@@ -6,11 +6,26 @@ option java_outer_classname = "KeymanagerGrpc";
 package br.com.zup;
 import "google/protobuf/timestamp.proto";
 
-service KeymanagerRegistraGrpcService {
-
+service KeyManagerRegistraGrpcService {
   rpc registra(RegistraChavePixRequest) returns (RegistraChavePixResponse) {}
-
 }
+service KeyManagerRemoveGrpcService{
+  rpc remove(RemoveChavePixRequest) returns (RemoveChavePixResponse) {}
+}
+
+//requisitos para requerir uma exclusao
+message RemoveChavePixRequest {
+  string pixId = 1;
+  string clienteId = 2;
+}
+
+//requisitos da respsota de uma exclusao bem sucedida
+message RemoveChavePixResponse {
+  string pixId = 1;
+  string clienteId = 2;
+  string mensagem = 3;
+}
+
 
 //Enum para o tipo de chave a ser cadastrado
 //UNKNOWN é para não deixarmos o default como algum tipo valido do nosso sistema

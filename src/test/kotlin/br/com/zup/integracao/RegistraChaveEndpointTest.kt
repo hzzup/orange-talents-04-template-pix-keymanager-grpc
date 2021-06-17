@@ -1,6 +1,6 @@
 package br.com.zup.integracao
 
-import br.com.zup.KeymanagerRegistraGrpcServiceGrpc
+import br.com.zup.KeyManagerRegistraGrpcServiceGrpc
 import br.com.zup.RegistraChavePixRequest
 import br.com.zup.TipoDeChave
 import br.com.zup.TipoDeConta
@@ -36,7 +36,7 @@ import javax.inject.Inject
 @MicronautTest(transactional = false) //false pelo servico ser gRPC e não participar das mesmas transacoes
 class RegistraChaveEndpointTest(
     @Inject val repository: ChavePixRepository, //necessario injetar meu repository para utilizar as funcoes do db
-    @Inject val grpcClient: KeymanagerRegistraGrpcServiceGrpc.KeymanagerRegistraGrpcServiceBlockingStub
+    @Inject val grpcClient: KeyManagerRegistraGrpcServiceGrpc.KeyManagerRegistraGrpcServiceBlockingStub
     //injetamos tambem o client gRPC que criamos para delegar sua funcao de registro
 ) {
     @Inject //injetamos uma variavel do servico HTTP externo que utilizamos
@@ -169,8 +169,8 @@ class RegistraChaveEndpointTest(
     @Factory
     class Clients {
         @Bean //essa factory cria a comunicacao com nosso servico grpc (indicado pelo grpcserverchannel.name)
-        fun blockingStub(@GrpcChannel(GrpcServerChannel.NAME) channel:ManagedChannel) : KeymanagerRegistraGrpcServiceGrpc.KeymanagerRegistraGrpcServiceBlockingStub {
-            return KeymanagerRegistraGrpcServiceGrpc.newBlockingStub(channel)
+        fun blockingStub(@GrpcChannel(GrpcServerChannel.NAME) channel:ManagedChannel) : KeyManagerRegistraGrpcServiceGrpc.KeyManagerRegistraGrpcServiceBlockingStub {
+            return KeyManagerRegistraGrpcServiceGrpc.newBlockingStub(channel)
         }
     }
 

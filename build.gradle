@@ -12,6 +12,7 @@ plugins {
 noArg {
     //embeddable wasnt with no args constructor
     annotation("javax.persistence.Embeddable")
+    annotation("javax.persistence.Entity")
 }
 
 version = "0.1"
