@@ -30,13 +30,13 @@ class ValidPixKeyValidator: javax.validation.ConstraintValidator<ValidPixKey, No
         }
 
         val valid = value.tipo.valida(value.chave)
-        if (!valid) {
-            // https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-custom-property-paths
-            context.disableDefaultConstraintViolation()
-            context
-                .buildConstraintViolationWithTemplate(context.defaultConstraintMessageTemplate) // or "chave Pix inválida (${value.tipo})"
-                .addPropertyNode("chave").addConstraintViolation()
-        }
+//        if (!valid) {
+//            // https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-custom-property-paths
+//            context.disableDefaultConstraintViolation()
+//            context
+//                .buildConstraintViolationWithTemplate(context.defaultConstraintMessageTemplate) // or "chave Pix inválida (${value.tipo})"
+//                .addPropertyNode("chave").addConstraintViolation()
+//        }
 
         return value.tipo.valida(value.chave)
     }

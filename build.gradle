@@ -45,7 +45,7 @@ dependencies {
     //JPA
     implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
     implementation("io.micronaut.sql:micronaut-hibernate-jpa")
-    runtime("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
 
     //bean validation
     implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
@@ -57,9 +57,14 @@ dependencies {
     //Cliente HTTP para acessar servico externo
     implementation("io.micronaut:micronaut-http-client")
 
-    //DB para testes + cliente http
+    //tudo o que precisamos para rodar nossos testes mockito, h2, junit...
+    kaptTest ("io.micronaut:micronaut-inject-java")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.mockito:mockito-core")
+    testImplementation("org.mockito:mockito-junit-jupiter:3.8.0")
+    testImplementation("io.micronaut.test:micronaut-test-junit5:2.3.2")
     testImplementation("com.h2database:h2")
-    testImplementation("io.micronaut:micronaut-http-client")
+    testImplementation("org.hamcrest:hamcrest-core:2.2")
 
 }
 
