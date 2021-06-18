@@ -14,3 +14,4 @@ jpa.default.properties.hibernate.show_sql: true
 jpa.default.properties.hibernate.format_sql: true
 externo:
   erp: ${ItauErp_url:`http://localhost:9091`}
+  bcb: ${Bcb_url:`http://localhost:8082`}

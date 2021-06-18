@@ -32,6 +32,6 @@ class ContaAssociada(
 ) {
 
     companion object {
-        public val ISPB: String = "60701190"
+        val ISPB: String = "60701190"
     }
 }
