@@ -52,7 +52,7 @@ class NovaChavePixService(@Inject val repository: ChavePixRepository,
         }
 
         //como o BCB que irá gerar nossas chaves aleatorias agora
-        //precisamos verificar se ela é do tipo aleatoria e pegar o valo vindo do bcb
+        //precisamos verificar se ela é do tipo aleatoria e pegar o valor vindo do bcb
         chave.atualizaChaveAleatoria(bcbResponse.body().key)
 
         return chave

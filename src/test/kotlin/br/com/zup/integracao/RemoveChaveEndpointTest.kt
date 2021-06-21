@@ -2,6 +2,8 @@ package br.com.zup.integracao
 
 import br.com.zup.*
 import br.com.zup.pix.ChavePixRepository
+import br.com.zup.pix.externo.BcbClient
+import br.com.zup.pix.externo.DeletePixKeyRequest
 import br.com.zup.pix.model.ChavePix
 import br.com.zup.pix.model.ContaAssociada
 import io.grpc.ManagedChannel
@@ -11,12 +13,15 @@ import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
+import io.micronaut.http.HttpResponse
+import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito
 import java.util.*
 import javax.inject.Inject
 
@@ -27,6 +32,10 @@ class RemoveChaveEndpointTest(
     @Inject val grpcClient: KeyManagerRemoveGrpcServiceGrpc.KeyManagerRemoveGrpcServiceBlockingStub
     //injetamos tambem o client gRPC que criamos para delegar sua funcao de registro
 ) {
+
+    //injetamos o cliete BCB para mockarmos e prosseguir com a exclusao
+    @Inject
+    lateinit var bcbClient: BcbClient
 
     lateinit var CHAVE_SALVA : ChavePix
 
@@ -58,7 +67,8 @@ class RemoveChaveEndpointTest(
     @Test //utilizar o padrão de cenario - > acao - > validacao
     fun `deve deletar uma chave pix`() {
         //cenario - "setup do ambiente para o teste"
-        //primeiro eu preciso cadastrar uma chave para poder deletar
+        Mockito.`when`(bcbClient.deletaChaveBcb(CHAVE_SALVA.chave, DeletePixKeyRequest(CHAVE_SALVA.chave, ContaAssociada.ISPB)))
+            .thenReturn(HttpResponse.ok())
 
         //acao - "realizar a tal acao de que será testada"
         //apagamos a mesma chave que acabamos de salvar
@@ -144,6 +154,36 @@ class RemoveChaveEndpointTest(
             assertEquals(Status.NOT_FOUND.code,status.code)
             assertEquals("Chave pix nao encontrado ou nao associada a um cliente",status.description)
         }
+    }
+
+    @Test //utilizar o padrão de cenario - > acao - > validacao
+    fun `nao deve remover chave pix quando resposta do bcb for diferente de 200`() {
+        //cenario - "setup do ambiente para o teste"
+        Mockito.`when`(bcbClient.deletaChaveBcb(CHAVE_SALVA.chave, DeletePixKeyRequest(CHAVE_SALVA.chave, ContaAssociada.ISPB)))
+            .thenReturn(HttpResponse.notFound())
+
+        //acao - "realizar a tal acao de que será testada"
+        //apagamos a mesma chave que acabamos de salvar
+        val thrown = assertThrows<StatusRuntimeException> {
+            grpcClient.remove(
+                RemoveChavePixRequest.newBuilder()
+                    .setClienteId(CHAVE_SALVA.clienteId.toString())
+                    .setPixId(CHAVE_SALVA.id.toString())
+                    .build()
+            )
+        }
+
+        //validacao - "validar o resultado"
+        with(thrown) {
+            assertEquals(Status.FAILED_PRECONDITION.code,status.code)
+            assertEquals("Erro ao remover chave Pix no Banco Central do Brasil (BCB)",status.description)
+        }
+    }
+
+    //mockamos o servico HTTP BCB externo para não atrapalhar nos nossos testes
+    @MockBean(BcbClient::class)
+    fun bcbClient() : BcbClient {
+        return Mockito.mock(BcbClient::class.java)
     }
 
     @Factory

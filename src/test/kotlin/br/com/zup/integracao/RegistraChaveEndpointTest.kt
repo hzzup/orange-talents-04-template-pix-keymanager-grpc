@@ -5,10 +5,7 @@ import br.com.zup.RegistraChavePixRequest
 import br.com.zup.TipoDeChave
 import br.com.zup.TipoDeConta
 import br.com.zup.pix.ChavePixRepository
-import br.com.zup.pix.externo.ContasDeClientesNoItauClient
-import br.com.zup.pix.externo.DadosDaContaResponse
-import br.com.zup.pix.externo.InstituicaoResponse
-import br.com.zup.pix.externo.TitularResponse
+import br.com.zup.pix.externo.*
 import br.com.zup.pix.model.ChavePix
 import br.com.zup.pix.model.ContaAssociada
 import io.grpc.ManagedChannel
@@ -28,7 +25,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
-import java.lang.RuntimeException
+import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 
@@ -41,6 +38,11 @@ class RegistraChaveEndpointTest(
 ) {
     @Inject //injetamos uma variavel do servico HTTP externo que utilizamos
     lateinit var itauClient: ContasDeClientesNoItauClient
+    @Inject
+    lateinit var bcbClient: BcbClient // (agora dois itau+bcb)
+
+    //objeto que irei inicializar para testar o bcb
+    lateinit var bcbReq : CreatePixKeyRequest
 
     //UUID gerado randomicamente que será utilizado no teste
     //como não conversamos diretamente com o servico HTTP externo, devemos gerar um UUID
@@ -52,10 +54,10 @@ class RegistraChaveEndpointTest(
     //ou seja o banco será limpo após cada um dos testes
     @BeforeEach
     fun setup() {
+        //bcbReq é o meu objeto que vou passar na requisicao ao BCB, como é o mesmo deixei no setup
+        bcbReq = bcbReq(br.com.zup.pix.TipoDeChave.EMAIL, "teste@teste.com.br")
         repository.deleteAll()
     }
-
-
 
     @Test //utilizar o padrão de cenario - > acao - > validacao
     fun `deve registrar nova chave pix`() {
@@ -65,6 +67,8 @@ class RegistraChaveEndpointTest(
         //para o UUID que criamos e um tipo de conta e retornamos um resultado de cliente OK!
         `when`(itauClient.buscaContaPorTipo(clienteId = CLIENTE_ID.toString(), tipo ="CONTA_CORRENTE"))
             .thenReturn(HttpResponse.ok(dadosDaContaResponse()))
+        `when`(bcbClient.cadastraChaveBcb(bcbReq))
+            .thenReturn(HttpResponse.created(bcbResp()))
 
         //acao - "realizar a tal acao de que será testada"
         //registramos a nova chave (Criando ela diretamente no parametro)
@@ -160,10 +164,47 @@ class RegistraChaveEndpointTest(
         }
     }
 
-    //mockamos o servico HTTP externo para não atrapalhar nos nossos testes
+    @Test
+    fun `nao deve registrar chave pix quando ocorrer erro no BCB`() {
+        //cenario
+
+        //ERP ITAU = OK, BCB = FALHOU
+        `when`(itauClient.buscaContaPorTipo(clienteId = CLIENTE_ID.toString(), tipo ="CONTA_CORRENTE"))
+            .thenReturn(HttpResponse.ok(dadosDaContaResponse()))
+        `when`(bcbClient.cadastraChaveBcb(bcbReq))
+            .thenReturn(HttpResponse.unprocessableEntity())
+
+        //acao
+        //pegamos a excecao que é jogada, ja que não conseguimos recuperar um cliente do erp itau
+        val thrown = assertThrows<StatusRuntimeException> {
+            grpcClient.registra(RegistraChavePixRequest.newBuilder()
+                .setClienteId(CLIENTE_ID.toString())
+                .setTipoDeChave(TipoDeChave.EMAIL)
+                .setChave("teste@teste.com.br")
+                .setTipoDeConta(TipoDeConta.CONTA_CORRENTE)
+                .build())
+        }
+
+        //validacao
+        //verificamos se os codigos de erro e descricao batem
+        with(thrown) {
+            assertEquals(Status.FAILED_PRECONDITION.code,status.code)
+            assertEquals("Erro ao registrar chave Pix no Banco Central do Brasil (BCB)",status.description)
+        }
+    }
+
+
+
+    //mockamos o servico HTTP ITAU externo para não atrapalhar nos nossos testes
     @MockBean(ContasDeClientesNoItauClient::class)
     fun itauClient() : ContasDeClientesNoItauClient {
         return Mockito.mock(ContasDeClientesNoItauClient::class.java)
+    }
+
+    //mockamos o servico HTTP BCB externo para não atrapalhar nos nossos testes
+    @MockBean(BcbClient::class)
+    fun bcbClient() : BcbClient {
+        return Mockito.mock(BcbClient::class.java)
     }
 
     @Factory
@@ -182,6 +223,41 @@ class RegistraChaveEndpointTest(
             agencia = "54",
             numero = "123",
             titular = TitularResponse("Teste", "60745840019")
+        )
+    }
+
+    //metodo para gerar uma requisicao BCB rapidamente
+    private fun bcbReq(tipo : br.com.zup.pix.TipoDeChave, chave : String) : CreatePixKeyRequest {
+        return CreatePixKeyRequest(TipoChaveBcb.by(tipo),chave,bankAccount(),owner())
+    }
+
+    //metodo para gerar uma pix response (BCB)
+    private fun bcbResp() : CreatePixKeyResponse {
+        return CreatePixKeyResponse(
+            bcbReq.keyType,
+            bcbReq.key,
+            bcbReq.bankAccount,
+            bcbReq.owner,
+            LocalDateTime.now()
+        )
+    }
+
+    //metodo para gerar um owner (BCB)
+    private fun owner(): ClienteBcb {
+        return ClienteBcb(
+            type = TipoCliente.NATURAL_PERSON,
+            name = "Teste",
+            taxIdNumber = "60745840019"
+        )
+    }
+
+    //metodo para gerar um bank account (BCB)
+    private fun bankAccount(): contaBcb {
+        return contaBcb(
+            participant = ContaAssociada.ISPB,
+            branch = "54",
+            accountNumber = "123",
+            accountType = TipoContaBcb.by(br.com.zup.pix.TipoDeConta.CONTA_CORRENTE)
         )
     }
 
