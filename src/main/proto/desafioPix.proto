@@ -12,6 +12,9 @@ service KeyManagerRegistraGrpcService {
 service KeyManagerRemoveGrpcService{
   rpc remove(RemoveChavePixRequest) returns (RemoveChavePixResponse) {}
 }
+service KeyManagerBuscaChaveGrpcService{
+  rpc buscaChave(BuscaChavePixRequest) returns (BuscaChavePixResponse) {}
+}
 
 //requisitos para requerir uma exclusao
 message RemoveChavePixRequest {
@@ -57,4 +60,44 @@ message RegistraChavePixRequest {
 message RegistraChavePixResponse {
   string clienteId = 1;
   string pixId     = 2;
+}
+
+//requisitos para buscar uma chave
+message BuscaChavePixRequest {
+  message FiltroPorPixId {
+    string clienteId = 1;
+    string pixId     = 2;
+  }
+
+  //um dos tipos, 1 = chamada interna (cliente+pixid) 2 = chamada externa (valor da chave)
+  oneof filtro {
+    FiltroPorPixId pixId  = 1;
+    string chave          = 2;
+  }
+}
+
+//resposta ao buscar uma chave
+message BuscaChavePixResponse {
+
+  message ChavePix {
+
+    //dentro da chave temos as informacoes da conta
+    message ContaInfo {
+      TipoDeConta tipo     = 1;
+      string instituicao   = 2; /** ITAU UNIBANCO */
+      string nomeDoTitular = 3;
+      string cpfDoTitular  = 4;
+      string agencia       = 5;
+      string numeroDaConta = 6;
+    }
+    //atributos referentes a uma chave
+    TipoDeChave tipo        = 1;
+    string chave            = 2;
+    ContaInfo conta         = 3;
+    google.protobuf.Timestamp criadaEm = 4;
+  }
+  //atributos referente ao cliente+pix
+  string clienteId = 1;
+  string pixId     = 2;
+  ChavePix chave   = 3;
 }

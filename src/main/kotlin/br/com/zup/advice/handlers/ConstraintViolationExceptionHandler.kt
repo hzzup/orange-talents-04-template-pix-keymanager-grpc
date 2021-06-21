@@ -34,5 +34,4 @@ class ConstraintViolationExceptionHandler : ExceptionHandler<ConstraintViolation
     override fun supports(e: Exception): Boolean {
         return e is ConstraintViolationException
     }
-
 }

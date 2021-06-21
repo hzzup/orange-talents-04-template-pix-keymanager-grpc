@@ -1,7 +1,9 @@
 package br.com.zup.pix.externo
 
+import br.com.zup.pix.Instituicoes
 import br.com.zup.pix.TipoDeChave
 import br.com.zup.pix.TipoDeConta
+import br.com.zup.pix.busca.ChavePixInfo
 import br.com.zup.pix.model.ChavePix
 import br.com.zup.pix.model.ContaAssociada
 import io.micronaut.http.HttpResponse
@@ -24,6 +26,10 @@ interface BcbClient {
     @Consumes(MediaType.APPLICATION_XML)
     fun deletaChaveBcb(@PathVariable(value = "key") keyPath : String, @Body request : DeletePixKeyRequest) : HttpResponse<DeletePixKeyResponse>
 
+    @Get(value = "/api/v1/pix/keys/{key}")
+    @Produces(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_XML)
+    fun buscaChave(@PathVariable(value= "key") keyPath : String) : HttpResponse<PixKeyDetailsResponse>
 }
 
 data class CreatePixKeyRequest(
@@ -128,3 +134,30 @@ data class DeletePixKeyResponse (
     val participant: String,
     val deletedAt : LocalDateTime
 )
+
+data class PixKeyDetailsResponse (
+    val keyType: TipoChaveBcb,
+    val key: String,
+    val bankAccount: contaBcb,
+    val owner: ClienteBcb,
+    val createdAt: LocalDateTime
+) {
+    //transforma a resposta do bcb para o modelo de response do meu sistema (dto)
+    fun toModel(): ChavePixInfo {
+        return ChavePixInfo(
+            tipo = keyType.tipoChaveModel!!,
+            chave = this.key,
+            tipoDeConta = when(this.bankAccount.accountType) {
+                TipoContaBcb.CACC -> TipoDeConta.CONTA_CORRENTE
+                TipoContaBcb.SVGS -> TipoDeConta.CONTA_POUPANCA
+            },
+            conta = ContaAssociada(
+                instituicao = Instituicoes.nome(bankAccount.participant),
+                nomeDoTitular = owner.name,
+                cpfDoTitular = owner.taxIdNumber,
+                agencia = bankAccount.branch,
+                numeroDaConta = bankAccount.accountNumber
+            )
+        )
+    }
+}

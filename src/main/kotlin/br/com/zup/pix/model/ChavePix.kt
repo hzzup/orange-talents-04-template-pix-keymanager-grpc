@@ -44,6 +44,7 @@ class ChavePix(
     @Column(nullable = false)
     val criadaEm: LocalDateTime = LocalDateTime.now()
 
+    //atualiza chave com o valor vindo do bcb quando é aleatoria
     fun atualizaChaveAleatoria(chaveBcb: String) : Boolean {
         if (tipo == TipoDeChave.ALEATORIA) {
             this.chave = chaveBcb
@@ -51,5 +52,8 @@ class ChavePix(
         }
         return false
     }
+
+    //verifica por uma chave se o cliente é o mesmo de tal chave
+    fun chavePertenceAo(clienteId: UUID) = this.clienteId.equals(clienteId)
 
 }
