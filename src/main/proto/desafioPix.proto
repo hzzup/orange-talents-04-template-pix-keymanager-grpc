@@ -15,6 +15,9 @@ service KeyManagerRemoveGrpcService{
 service KeyManagerBuscaChaveGrpcService{
   rpc buscaChave(BuscaChavePixRequest) returns (BuscaChavePixResponse) {}
 }
+service KeyManagerListaChavesGrpcService{
+  rpc listaChaves(ListaChavesPixRequest) returns (ListaChavesPixResponse) {}
+}
 
 //requisitos para requerir uma exclusao
 message RemoveChavePixRequest {
@@ -100,4 +103,20 @@ message BuscaChavePixResponse {
   string clienteId = 1;
   string pixId     = 2;
   ChavePix chave   = 3;
+}
+
+message ListaChavesPixRequest {
+  string clienteId = 1;
+}
+
+message ListaChavesPixResponse{
+  message ChavePix {
+    string pixId            = 1;
+    TipoDeChave tipoDeChave = 2;
+    string chave            = 3;
+    TipoDeConta tipoDeConta = 4;
+    google.protobuf.Timestamp criadaEm = 5;
+  }
+  string clienteId         = 1;
+  repeated ChavePix chaves = 2;
 }

@@ -18,7 +18,8 @@ import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -29,10 +30,10 @@ import javax.inject.Inject
 
 //subir contexto do micronaut no teste
 @MicronautTest(transactional = false) //false pelo servico ser gRPC e não participar das mesmas transacoes
-class BuscaChaveEndpointTest(
-    @Inject val repository: ChavePixRepository, //necessario injetar meu repository para utilizar as funcoes do db
-    @Inject val grpcClient: KeyManagerBuscaChaveGrpcServiceGrpc.KeyManagerBuscaChaveGrpcServiceBlockingStub
+internal class BuscaChaveEndpointTest(
     //injetamos tambem o client gRPC que criamos para delegar sua funcao de registro
+    val grpcClient: KeyManagerBuscaChaveGrpcServiceGrpc.KeyManagerBuscaChaveGrpcServiceBlockingStub,
+    val repository: ChavePixRepository //necessario injetar meu repository para utilizar as funcoes do db
 ) {
 
     @Inject

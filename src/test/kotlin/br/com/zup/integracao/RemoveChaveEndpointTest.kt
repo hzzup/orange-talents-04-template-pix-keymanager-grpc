@@ -1,6 +1,7 @@
 package br.com.zup.integracao
 
-import br.com.zup.*
+import br.com.zup.KeyManagerRemoveGrpcServiceGrpc
+import br.com.zup.RemoveChavePixRequest
 import br.com.zup.pix.ChavePixRepository
 import br.com.zup.pix.externo.BcbClient
 import br.com.zup.pix.externo.DeletePixKeyRequest
@@ -27,10 +28,10 @@ import javax.inject.Inject
 
 //subir contexto do micronaut no teste
 @MicronautTest(transactional = false) //false pelo servico ser gRPC e não participar das mesmas transacoes
-class RemoveChaveEndpointTest(
-    @Inject val repository: ChavePixRepository, //necessario injetar meu repository para utilizar as funcoes do db
-    @Inject val grpcClient: KeyManagerRemoveGrpcServiceGrpc.KeyManagerRemoveGrpcServiceBlockingStub
+internal class RemoveChaveEndpointTest(
     //injetamos tambem o client gRPC que criamos para delegar sua funcao de registro
+    val grpcClient: KeyManagerRemoveGrpcServiceGrpc.KeyManagerRemoveGrpcServiceBlockingStub,
+    val repository: ChavePixRepository //necessario injetar meu repository para utilizar as funcoes do db
 ) {
 
     //injetamos o cliete BCB para mockarmos e prosseguir com a exclusao

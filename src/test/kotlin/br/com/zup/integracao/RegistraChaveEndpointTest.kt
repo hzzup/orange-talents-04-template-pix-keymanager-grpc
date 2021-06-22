@@ -31,10 +31,10 @@ import javax.inject.Inject
 
 //subir contexto do micronaut no teste
 @MicronautTest(transactional = false) //false pelo servico ser gRPC e não participar das mesmas transacoes
-class RegistraChaveEndpointTest(
-    @Inject val repository: ChavePixRepository, //necessario injetar meu repository para utilizar as funcoes do db
-    @Inject val grpcClient: KeyManagerRegistraGrpcServiceGrpc.KeyManagerRegistraGrpcServiceBlockingStub
+internal class RegistraChaveEndpointTest(
     //injetamos tambem o client gRPC que criamos para delegar sua funcao de registro
+    val grpcClient: KeyManagerRegistraGrpcServiceGrpc.KeyManagerRegistraGrpcServiceBlockingStub,
+    val repository: ChavePixRepository //necessario injetar meu repository para utilizar as funcoes do db
 ) {
     @Inject //injetamos uma variavel do servico HTTP externo que utilizamos
     lateinit var itauClient: ContasDeClientesNoItauClient

@@ -8,7 +8,6 @@ import br.com.zup.pix.externo.CreatePixKeyRequest
 import br.com.zup.pix.model.ChavePix
 import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
-import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.transaction.Transactional
@@ -20,8 +19,6 @@ class NovaChavePixService(@Inject val repository: ChavePixRepository,
                           @Inject val itauClient: ContasDeClientesNoItauClient,
                           @Inject val bcbClient: BcbClient
 ) {
-
-    //private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
     @Transactional //transactional pois salvará nossa chave pix no banco
     //retorna nossa entidade modelo de chave pix
