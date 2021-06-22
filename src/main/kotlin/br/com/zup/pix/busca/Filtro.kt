@@ -22,7 +22,7 @@ sealed class Filtro {
     data class PorPixId(
         @field:NotBlank @field:ValidUUID val clienteId: String,
         @field:NotBlank @field:ValidUUID val pixId: String,
-    ) : Filtro() { // 1
+    ) : Filtro() {
 
         fun pixIdAsUuid() = UUID.fromString(pixId)
         fun clienteIdAsUuid() = UUID.fromString(clienteId)

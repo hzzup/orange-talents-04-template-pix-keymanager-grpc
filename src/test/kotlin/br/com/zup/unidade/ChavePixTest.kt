@@ -13,6 +13,7 @@ internal class ChavePixTest {
 
     companion object {
         val RANDOM_BCB_KEY_VALUE = UUID.randomUUID().toString()
+        val CLIENTE_ID = UUID.randomUUID()
     }
 
     @Test
@@ -62,4 +63,53 @@ internal class ChavePixTest {
         //validacao
         assertNotEquals(chaveNaoAleatoria.chave, RANDOM_BCB_KEY_VALUE)
     }
+
+    @Test
+    fun `deve retornar true caso a chave seja desse cliente ID`() {
+        //cenario
+        val chaveNova = ChavePix(
+            clienteId = CLIENTE_ID,
+            tipo = TipoDeChave.CPF,
+            chave = "26896912057",
+            tipoDeConta = TipoDeConta.CONTA_CORRENTE,
+            conta = ContaAssociada(
+                instituicao = "Teste",
+                nomeDoTitular = "Teste",
+                cpfDoTitular = "26896912057",
+                agencia = "54",
+                numeroDaConta = "4444"
+            )
+        )
+
+        //acao
+        val verificaChave = chaveNova.chavePertenceAo(CLIENTE_ID)
+
+        //validacao
+        assertTrue(verificaChave)
+    }
+
+    @Test
+    fun `nao deve retornar true caso a chave nao seja desse cliente id`() {
+        //cenario
+        val chaveNova = ChavePix(
+            clienteId = CLIENTE_ID,
+            tipo = TipoDeChave.CPF,
+            chave = "26896912057",
+            tipoDeConta = TipoDeConta.CONTA_CORRENTE,
+            conta = ContaAssociada(
+                instituicao = "Teste",
+                nomeDoTitular = "Teste",
+                cpfDoTitular = "26896912057",
+                agencia = "54",
+                numeroDaConta = "4444"
+            )
+        )
+
+        //acao
+        val verificaChave = chaveNova.chavePertenceAo(UUID.randomUUID())
+
+        //validacao
+        assertFalse(verificaChave)
+    }
+
 }
