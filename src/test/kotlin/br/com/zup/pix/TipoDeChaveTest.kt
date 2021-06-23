@@ -1,4 +1,4 @@
-package br.com.zup.unidade
+package br.com.zup.pix
 
 import br.com.zup.pix.TipoDeChave
 import org.junit.jupiter.api.Assertions.assertFalse

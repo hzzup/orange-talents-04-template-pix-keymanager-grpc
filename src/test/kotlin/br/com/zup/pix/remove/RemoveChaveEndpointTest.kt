@@ -1,4 +1,4 @@
-package br.com.zup.integracao
+package br.com.zup.pix.remove
 
 import br.com.zup.KeyManagerRemoveGrpcServiceGrpc
 import br.com.zup.RemoveChavePixRequest
@@ -30,7 +30,7 @@ import javax.inject.Inject
 @MicronautTest(transactional = false) //false pelo servico ser gRPC e não participar das mesmas transacoes
 internal class RemoveChaveEndpointTest(
     //injetamos tambem o client gRPC que criamos para delegar sua funcao de registro
-    val grpcClient: KeyManagerRemoveGrpcServiceGrpc.KeyManagerRemoveGrpcServiceBlockingStub,
+    @Inject val grpcClient: KeyManagerRemoveGrpcServiceGrpc.KeyManagerRemoveGrpcServiceBlockingStub,
     val repository: ChavePixRepository //necessario injetar meu repository para utilizar as funcoes do db
 ) {
 

@@ -1,4 +1,4 @@
-package br.com.zup.unidade
+package br.com.zup.advice
 
 import br.com.zup.advice.ExceptionHandlerInterceptor
 import br.com.zup.advice.ExceptionHandlerResolver

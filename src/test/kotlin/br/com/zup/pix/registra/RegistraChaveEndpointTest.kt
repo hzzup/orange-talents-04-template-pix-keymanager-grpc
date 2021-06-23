@@ -1,4 +1,4 @@
-package br.com.zup.integracao
+package br.com.zup.pix.registra
 
 import br.com.zup.KeyManagerRegistraGrpcServiceGrpc
 import br.com.zup.RegistraChavePixRequest
@@ -33,7 +33,7 @@ import javax.inject.Inject
 @MicronautTest(transactional = false) //false pelo servico ser gRPC e não participar das mesmas transacoes
 internal class RegistraChaveEndpointTest(
     //injetamos tambem o client gRPC que criamos para delegar sua funcao de registro
-    val grpcClient: KeyManagerRegistraGrpcServiceGrpc.KeyManagerRegistraGrpcServiceBlockingStub,
+    @Inject val grpcClient: KeyManagerRegistraGrpcServiceGrpc.KeyManagerRegistraGrpcServiceBlockingStub,
     val repository: ChavePixRepository //necessario injetar meu repository para utilizar as funcoes do db
 ) {
     @Inject //injetamos uma variavel do servico HTTP externo que utilizamos

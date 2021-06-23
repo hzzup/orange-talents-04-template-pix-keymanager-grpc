@@ -1,4 +1,4 @@
-package br.com.zup.integracao
+package br.com.zup.pix.busca
 
 import br.com.zup.BuscaChavePixRequest
 import br.com.zup.KeyManagerBuscaChaveGrpcServiceGrpc

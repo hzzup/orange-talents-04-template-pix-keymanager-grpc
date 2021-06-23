@@ -1,10 +1,7 @@
-package br.com.zup.unidade
+package br.com.zup.pix.model
 
 import br.com.zup.pix.TipoDeChave
 import br.com.zup.pix.TipoDeConta
-import br.com.zup.pix.model.ChavePix
-import br.com.zup.pix.model.ContaAssociada
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*
